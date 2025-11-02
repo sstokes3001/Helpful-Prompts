@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompts Organizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 10px 20px;
+            background: var(--hover-bg);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .prompts-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .prompt-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .prompt-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .prompt-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-llm {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-category {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-tag {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .prompt-purpose {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .prompt-content {
+            background: var(--hover-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .prompt-card.expanded .prompt-content {
+            display: block;
+        }
+
+        .prompt-notes {
+            padding: 12px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #78350f;
+            display: none;
+        }
+
+        .prompt-card.expanded .prompt-notes {
+            display: block;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .prompt-card.expanded .prompt-actions {
+            display: flex;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .expand-indicator {
+            font-size: 12px;
+            color: var(--primary-color);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prompt-card.expanded .expand-indicator {
+            display: none;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .updated-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                padding: 15px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                gap: 15px;
+            }
+
+            .prompt-card {
+                padding: 15px;
+            }
+
+            .prompt-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🤖 AI Prompts Organizer</h1>
+            <p class="subtitle">Your curated collection of powerful AI prompts</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search prompts by title, purpose, or content...">
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">LLM</label>
+                    <select id="llmFilter" class="filter-select">
+                        <option value="">All LLMs</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Tags</label>
+                    <select id="tagFilter" class="filter-select">
+                        <option value="">All Tags</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalPrompts">0</div>
+                <div class="stat-label">Total Prompts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="visiblePrompts">0</div>
+                <div class="stat-label">Showing</div>
+            </div>
+        </div>
+
+        <div class="prompts-grid" id="promptsContainer">
+            <!-- Prompts will be inserted here -->
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <h2>No prompts found</h2>
+            <p>Try adjusting your search or filters</p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Data
+        const promptsData = [
+            {
+                "Prompt Title": "The Clarification Request",
+                "File": "",
+                "Category": "Other",
+                "Purpose": "Forces Gemini to ask you questions before responding, ensuring it understands your request fully.",
+                "The Prompt": "\nAsk me clarifying questions until you are 95% confident you can complete the task successfully\nWait for my answers before proceeding.\n\n[Then state your actual request]",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "When to use: Complex projects, ambiguous requests, or when you're not sure what you need."
+            },
+            {
+                "Prompt Title": "Top Expert",
+                "File": "",
+                "Category": "Faculty, Teaching",
+                "Purpose": "Gets the LLM to channel expertise in the specific field of your inquiry",
+                "The Prompt": "You are the top expert in the world on this topic. Provide a thoughtful and thorough response that demonstrates your expertise.",
+                "Tags (Keywords)": "Faculty, Student",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "When you want innovative solutions or need to use multiple expertise."
+            },
+            {
+                "Prompt Title": "Prioritize Unorthodox Advice",
+                "File": "",
+                "Category": "Ideas",
+                "Purpose": "Forces the LLM to think outside conventional patterns, generating creative and non-obvious solutions",
+                "The Prompt": "List unorthodox, lesser-known advice in this area. Limit your answer to the two most important points and keep your answer brief.",
+                "Tags (Keywords)": "Faculty, Student",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": "Brainstorming sessions, when standard approaches have failed."
+            },
+            {
+                "Prompt Title": "The Internal Rubric",
+                "File": "",
+                "Category": "Teaching, Other",
+                "Purpose": "Leverages the LLM's internal quality assessment system to produce higher-quality responses",
+                "The Prompt": "Draft your response. Then on second thought, improve it to score higher on your own internal quality rubric.",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "You get Gemini's 5th draft instead of its first one!"
+            },
+            {
+                "Prompt Title": "Thought Refiner",
+                "File": "",
+                "Category": "Teaching, Other",
+                "Purpose": "Iteratively improves responses through multiple refinement cycles",
+                "The Prompt": "Please think about this problem step-by-step.\n\nAfter giving your initial answer, reconsider the problem:\n- What assumptions did you make?\n- What alternative approaches exist?\n- How could your answer be more accurate or complete?\n\nThen provide an improved response.",
+                "Tags (Keywords)": "Improvement, Faculty",
+                "Last Updated": "2025-11-02",
+                "LLM": "Claude",
+                "Notes": ""
+            },
+            {
+                "Prompt Title": "Personal Tutor",
+                "File": "",
+                "Category": "Teaching",
+                "Purpose": "Creates an adaptive learning experience tailored to the user's knowledge level",
+                "The Prompt": "Act as my personal tutor for [topic]. First, assess my current understanding by asking me 2-3 diagnostic questions. Based on my responses, create a customized learning plan that:\n1. Identifies knowledge gaps\n2. Builds on what I already know\n3. Uses examples relevant to my level\n4. Provides practice problems with detailed feedback",
+                "Tags (Keywords)": "Student, Faculty",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": "Excellent for self-paced learning or preparing lessons"
+            },
+            {
+                "Prompt Title": "Devil's Advocate",
+                "File": "",
+                "Category": "Ideas, Other",
+                "Purpose": "Challenges ideas and assumptions to strengthen arguments and identify weaknesses",
+                "The Prompt": "Play devil's advocate for this idea/proposal. Identify:\n1. Three strongest counter-arguments\n2. Potential unintended consequences\n3. Hidden assumptions that might be wrong\n4. Alternative solutions that might work better\n\nBe constructively critical but fair.",
+                "Tags (Keywords)": "Faculty, Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Claude",
+                "Notes": "Use before finalizing important decisions or proposals"
+            },
+            {
+                "Prompt Title": "Research Synthesizer",
+                "File": "",
+                "Category": "Faculty, Teaching",
+                "Purpose": "Combines multiple sources and perspectives into a coherent synthesis",
+                "The Prompt": "Synthesize information about [topic] from multiple perspectives:\n1. Current mainstream understanding\n2. Recent developments and cutting-edge research\n3. Controversial or debated aspects\n4. Practical applications\n5. Future directions\n\nProvide citations or indicate where specific information would typically be found.",
+                "Tags (Keywords)": "Faculty, Student",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "Ideal for literature reviews or getting comprehensive topic overviews"
+            },
+            {
+                "Prompt Title": "Meeting Summarizer",
+                "File": "",
+                "Category": "Other",
+                "Purpose": "Extracts key information from meeting notes or transcripts",
+                "The Prompt": "From this meeting transcript/notes, extract:\n1. Key decisions made\n2. Action items (with assigned owners if mentioned)\n3. Important discussion points\n4. Unresolved questions\n5. Next steps and deadlines\n\nFormat as a concise, scannable summary.",
+                "Tags (Keywords)": "Admin, Faculty",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": "Paste meeting notes or transcript after the prompt"
+            },
+            {
+                "Prompt Title": "Reflection Guide",
+                "File": "",
+                "Category": "Teaching",
+                "Purpose": "Facilitates deep reflection on experiences or learning",
+                "The Prompt": "Guide me through a structured reflection on [experience/topic]:\n1. What happened? (Describe objectively)\n2. How did I feel and why?\n3. What went well and what could improve?\n4. What did I learn?\n5. How will I apply this learning?\n6. What questions remain?\n\nAsk follow-up questions to deepen my reflection.",
+                "Tags (Keywords)": "Student, Reflection",
+                "Last Updated": "2025-11-02",
+                "LLM": "Claude",
+                "Notes": "Excellent for journaling, professional development, or student assignments"
+            },
+            {
+                "Prompt Title": "Code Reviewer",
+                "File": "",
+                "Category": "Other",
+                "Purpose": "Provides comprehensive code review with best practices",
+                "The Prompt": "Review this code for:\n1. Bugs and potential errors\n2. Performance optimizations\n3. Security vulnerabilities\n4. Code style and readability\n5. Best practices for this language/framework\n\nProvide specific suggestions with code examples where helpful. Explain the 'why' behind each recommendation.",
+                "Tags (Keywords)": "Faculty, Student",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "Paste your code after the prompt"
+            },
+            {
+                "Prompt Title": "Curriculum Designer",
+                "File": "",
+                "Category": "Teaching",
+                "Purpose": "Creates structured learning paths with clear objectives and assessments",
+                "The Prompt": "Design a curriculum for teaching [subject/skill] to [target audience]:\n1. Learning objectives (measurable)\n2. Prerequisites\n3. Module breakdown with time estimates\n4. Key concepts and skills per module\n5. Suggested activities and assignments\n6. Assessment methods\n7. Resources and materials needed\n\nAlign with [specific standards/requirements if applicable].",
+                "Tags (Keywords)": "Faculty, Admin",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": "Specify duration (semester, workshop, etc.) and delivery format"
+            }
+        ];
+
+        // Initialize the app
+        let filteredPrompts = [...promptsData];
+        
+        // Populate filter dropdowns
+        function populateFilters() {
+            // Get unique categories
+            const categories = [...new Set(promptsData.flatMap(p => p.Category.split(',').map(c => c.trim())))].sort();
+            const categorySelect = document.getElementById('categoryFilter');
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+
+            // Get unique LLMs
+            const llms = [...new Set(promptsData.map(p => p.LLM))].sort();
+            const llmSelect = document.getElementById('llmFilter');
+            llms.forEach(llm => {
+                const option = document.createElement('option');
+                option.value = llm;
+                option.textContent = llm;
+                llmSelect.appendChild(option);
+            });
+
+            // Get unique tags
+            const tags = [...new Set(promptsData.flatMap(p => p["Tags (Keywords)"].split(',').map(t => t.trim())))].sort();
+            const tagSelect = document.getElementById('tagFilter');
+            tags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.textContent = tag;
+                tagSelect.appendChild(option);
+            });
+        }
+
+        // Render prompts
+        function renderPrompts() {
+            const container = document.getElementById('promptsContainer');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredPrompts.length === 0) {
+                container.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                container.style.display = 'grid';
+                noResults.style.display = 'none';
+                
+                container.innerHTML = filteredPrompts.map(prompt => `
+                    <div class="prompt-card" data-prompt='${JSON.stringify(prompt).replace(/'/g, "&apos;")}'>
+                        <div class="prompt-header">
+                            <div>
+                                <h2 class="prompt-title">${prompt["Prompt Title"]}</h2>
+                                <div class="updated-date">Last updated: ${prompt["Last Updated"]}</div>
+                            </div>
+                        </div>
+                        <div class="prompt-meta">
+                            <span class="badge badge-llm">${prompt.LLM}</span>
+                            ${prompt.Category.split(',').map(cat => `<span class="badge badge-category">${cat.trim()}</span>`).join('')}
+                            ${prompt["Tags (Keywords)"].split(',').map(tag => `<span class="badge badge-tag">${tag.trim()}</span>`).join('')}
+                        </div>
+                        <p class="prompt-purpose">${prompt.Purpose}</p>
+                        <div class="prompt-content">${prompt["The Prompt"]}</div>
+                        ${prompt.Notes ? `<div class="prompt-notes">💡 ${prompt.Notes}</div>` : ''}
+                        <div class="prompt-actions">
+                            <button class="btn btn-primary" onclick="copyPrompt(this)">Copy Prompt</button>
+                            <button class="btn btn-secondary" onclick="toggleCard(this)">Collapse</button>
+                        </div>
+                        <div class="expand-indicator">
+                            <span>▼</span> Click to view full prompt
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            updateStats();
+        }
+
+        // Filter prompts
+        function filterPrompts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const llmFilter = document.getElementById('llmFilter').value;
+            const tagFilter = document.getElementById('tagFilter').value;
+            
+            filteredPrompts = promptsData.filter(prompt => {
+                // Search filter
+                const searchMatch = !searchTerm || 
+                    prompt["Prompt Title"].toLowerCase().includes(searchTerm) ||
+                    prompt.Purpose.toLowerCase().includes(searchTerm) ||
+                    prompt["The Prompt"].toLowerCase().includes(searchTerm) ||
+                    (prompt.Notes && prompt.Notes.toLowerCase().includes(searchTerm));
+                
+                // Category filter
+                const categoryMatch = !categoryFilter || 
+                    prompt.Category.includes(categoryFilter);
+                
+                // LLM filter
+                const llmMatch = !llmFilter || 
+                    prompt.LLM === llmFilter;
+                
+                // Tag filter
+                const tagMatch = !tagFilter || 
+                    prompt["Tags (Keywords)"].includes(tagFilter);
+                
+                return searchMatch && categoryMatch && llmMatch && tagMatch;
+            });
+            
+            renderPrompts();
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalPrompts').textContent = promptsData.length;
+            document.getElementById('visiblePrompts').textContent = filteredPrompts.length;
+        }
+
+        // Copy prompt to clipboard
+        function copyPrompt(button) {
+            const card = button.closest('.prompt-card');
+            const promptData = JSON.parse(card.dataset.prompt);
+            const textToCopy = promptData["The Prompt"];
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast('Prompt copied to clipboard!');
+            }).catch(err => {
+                showToast('Failed to copy prompt');
+            });
+        }
+
+        // Toggle card expansion
+        function toggleCard(button) {
+            const card = button.closest('.prompt-card');
+            card.classList.remove('expanded');
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterPrompts);
+        document.getElementById('categoryFilter').addEventListener('change', filterPrompts);
+        document.getElementById('llmFilter').addEventListener('change', filterPrompts);
+        document.getElementById('tagFilter').addEventListener('change', filterPrompts);
+
+        // Card click handler
+        document.addEventListener('click', function(e) {
+            const card = e.target.closest('.prompt-card');
+            if (card && !e.target.closest('.btn')) {
+                card.classList.toggle('expanded');
+            }
+        });
+
+        // Initialize
+        populateFilters();
+        renderPrompts();
+    </script>
+</body>
+</html>
