@@ -1,0 +1,807 @@
+        }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompts Organizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 10px 20px;
+            background: var(--hover-bg);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .prompts-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .prompt-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .prompt-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .prompt-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-llm {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-category {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-tag {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-uncategorized {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .prompt-purpose {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .prompt-content {
+            background: var(--hover-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .prompt-card.expanded .prompt-content {
+            display: block;
+        }
+
+        .prompt-notes {
+            padding: 12px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #78350f;
+            display: none;
+            white-space: pre-wrap;
+        }
+
+        .prompt-card.expanded .prompt-notes {
+            display: block;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .prompt-card.expanded .prompt-actions {
+            display: flex;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .expand-indicator {
+            font-size: 12px;
+            color: var(--primary-color);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prompt-card.expanded .expand-indicator {
+            display: none;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .updated-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                padding: 15px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                gap: 15px;
+            }
+
+            .prompt-card {
+                padding: 15px;
+            }
+
+            .prompt-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🤖 AI Prompts Organizer</h1>
+            <p class="subtitle">Your curated collection of powerful AI prompts</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search prompts by title, purpose, or content...">
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">LLM</label>
+                    <select id="llmFilter" class="filter-select">
+                        <option value="">All LLMs</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Tags</label>
+                    <select id="tagFilter" class="filter-select">
+                        <option value="">All Tags</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalPrompts">0</div>
+                <div class="stat-label">Total Prompts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="visiblePrompts">0</div>
+                <div class="stat-label">Showing</div>
+            </div>
+        </div>
+
+        <div class="prompts-grid" id="promptsContainer">
+            <!-- Prompts will be inserted here -->
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <h2>No prompts found</h2>
+            <p>Try adjusting your search or filters</p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script id="promptsData" type="application/json">
+        [
+            {
+                "Prompt Title": "The Clarification Request",
+                "File": "",
+                "Category": "Other",
+                "Purpose": "Forces Gemini to ask you questions before responding, ensuring it understands your request fully.",
+                "The Prompt": "\nAsk me clarifying questions until you are 95% confident you can complete the task successfully\nWait for my answers before proceeding.\n\n[Then state your actual request]",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "When to use: Complex projects, ambiguous requests, or when you're not sure what you need."
+            },
+            {
+                "Prompt Title": "Top Expert",
+                "File": "",
+                "Category": "Faculty, Teaching",
+                "Purpose": "Asks Gemini to think like a top expert in the field would think.",
+                "The Prompt": "Before answering, consider: What would a top 0.1% expert in [field] think about this? \nHow might they reframe this problem to challenge my current perspective?\n[Your question]",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "When you want innovative solutions or need to challenge your assumptions"
+            },
+            {
+                "Prompt Title": "Prioritize Unorthodox Advice",
+                "File": "",
+                "Category": "Ideas",
+                "Purpose": "Filters out common advice and surfaces lesser-known strategies.",
+                "The Prompt": "[Your question]\n\nPrioritize unorthodox, lesser-known advice in your answer. Explain using detailed examples.\nAvoid obvious or commonly suggested solutions.",
+                "Tags (Keywords)": "Improvement, Reflection",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "Brainstorming sessions, when standard approaches aren't working"
+            },
+            {
+                "Prompt Title": "The Internal Rubric",
+                "File": "",
+                "Category": "Teaching, Other",
+                "Purpose": "Makes Gemini create quality standards and iterate until meeting them before showing you anything.",
+                "The Prompt": "Before you respond, create an internal rubric for what defines a 'world-class' answer to my request. Then iterate on your response until it scores 10/10 against that rubric. \nShow me only the final, perfected output.\n\n[Your request]",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "You get Gemini's 5th draft instead of its first draft."
+            },
+            {
+                "Prompt Title": "Thought Refiner",
+                "File": "",
+                "Category": "Ideas",
+                "Purpose": "Use case: You have rough ideas but can't articulate them clearly.\n",
+                "The Prompt": "You are a professional editor specializing in transforming rough ideas into polished content.\n\nWhen I share my rough draft:\nFirst, identify and list the key ideas to ensure nothing is lost\nThen provide three distinct versions:\nVersion A: Clear and concise (executive summary style)\nVersion B: Engaging and conversational (blog style)  \nVersion C: Balanced middle ground of A and B\n\nFor each version:\nMaintain the core message and supporting points\nEnhance clarity and flow\nStrengthen logical progression\nRemove redundancies while preserving nuance\n\nAfter presenting the versions, highlight any unique elements from my original that deserve special attention.\n\nHere's my rough draft:\n[Paste your messy thoughts here]",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": ""
+            },
+            {
+                "Prompt Title": "The Rephrase Tool (Three Variations)",
+                "File": "",
+                "Category": "Ideas, Other",
+                "Purpose": "You need the same message in different tones or lengths.",
+                "The Prompt": "Rephrase the excerpt below to make it more\n\n[precise/concise/conversational/\n\nprofessional/firm].\n\nGive me 3 variations.\n\nHere's the excerpt:\n\n[Paste text here]",
+                "Tags (Keywords)": "Admin",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": ""
+            },
+            {
+                "Prompt Title": "Concept Simplifier (5 Examples)",
+                "File": "",
+                "Category": "Ideas",
+                "Purpose": "Use case: You have a complex idea but struggle to explain it clearly.",
+                "The Prompt": "Act as a knowledgeable college professor who specializes in simplifying complex ideas.\n\nYour goal is to help me convey the concept of [INSERT YOUR COMPLEX IDEA] in a way that is easy to understand.\n\nGenerate 5 specific and relatable examples that illustrate this concept. \nEach example should be tailored to my target audience: [INSERT AUDIENCE].\n\nUse everyday scenarios, analogies, or case studies they would recognize.",
+                "Tags (Keywords)": "Student",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": ""
+            },
+            {
+                "Prompt Title": "Copy Editor",
+                "File": "",
+                "Category": "Other",
+                "Purpose": "Checking grammar and punctuation",
+                "The Prompt": "You are a copy editor. You are tasked with improving the punctuation and grammar of the following writing sample with minimal changes in wording. When you are done, please give me a list of the punctuation and grammar you fixed in a bullet list. Here is the writing: [Insert writing here].",
+                "Tags (Keywords)": "Student",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": ""
+            },
+            {
+                "Prompt Title": "Lesson Planning",
+                "File": "",
+                "Category": "Teaching",
+                "Purpose": "Bloom's Taxonomy Aligner ",
+                "The Prompt": "**[My Field/Subject]:** (e.g., \"Sociology\")\n\n**[My Course Level]:** (e.g., \"100-level undergraduate\" OR \"300-level major requirement\" OR \"Graduate seminar\")\n\n**[My Teaching Context]:** (e.g., \"Large lecture (120 students)\" OR \"Small seminar (20 students)\" OR \"Online asynchronous\")\n\n**[My Preferred Assessment Style]:** (e.g., \"Mix of exams and projects\" OR \"Portfolio-based\" OR \"Discussion-heavy\")\n\n---\n\n### CORE INSTRUCTIONS\n\n**Persona:** You are an expert in instructional design and pedagogical theory for [My Field/Subject]. You have deep specialization in Bloom's Taxonomy (Cognitive Domain) and Universal Design for Learning (UDL). You create materials for [My Course Level] in [My Teaching Context].\n\n**Bloom's Taxonomy Levels (Reference):**\n1. **Remember:** Retrieve relevant knowledge (define, list, recall)\n2. **Understand:** Construct meaning (explain, summarize, interpret)\n3. **Apply:** Use information in new situations (solve, demonstrate, use)\n4. **Analyze:** Break material into parts (compare, organize, categorize)\n5. **Evaluate:** Make judgments (critique, assess, judge)\n6. **Create:** Put elements together in new ways (design, construct, produce)\n\n**Your Approach:** You work collaboratively, asking about my goals and constraints before generating objectives.\n\n---\n\n**Task:**\n\n**STEP 1 - Topic & Context Gathering:**\n\nWhen I start a new chat, your first response must be:\n\n\"Hello! I'm ready to help you design learning objectives and aligned assessments.\n\n**Please tell me:**\n\n1. **Topic/Module:** What's the subject? (e.g., \"Social Stratification\" or \"The Cell Cycle\" or \"Week 4: Macroeconomic Policy\")\n\n2. **Duration:** How much instructional time? (e.g., \"One 75-minute class\" OR \"A 2-week unit with 3 class sessions\" OR \"Self-paced online module\")\n\n3. **Where it fits:** Is this early, middle, or late in the course? (This affects complexity)\n\n4. **Your goal:** What should students be able to DO by the end? (Even a rough idea helps!)\n\n5. **Constraints:** Any limitations I should know? (e.g., \"No group work—online asynchronous\" OR \"Must align with department's common exam\")\n\n**OPTIONAL:** You can also upload a textbook chapter PDF, existing syllabus, or assignment sheet if that helps.\"\n\n**STEP 2 - Collaborative Objective Design:**\n\nBased on the information provided, propose a distribution of objectives across Bloom's levels:\n\n\"Based on your goals, I recommend:\n- 1-2 objectives at **Remember/Understand** (foundational)\n- 2-3 objectives at **Apply/Analyze** (core development)\n- 1 objective at **Evaluate/Create** (higher-order thinking)\n\n**Does this feel right for your students at this point in the semester?**\n\nWould you like me to:\n- Add more higher-order objectives (more challenging)?\n- Add more foundational objectives (more scaffolding)?\n- Focus primarily on one level?\"\n\n**Wait for confirmation or adjustment before proceeding.**\n\n**STEP 3 - Generate Learning Objectives:**\n\nCreate 3-5 specific, measurable learning objectives.\n\n**Each objective must:**\n- Start with a measurable action verb from Bloom's Taxonomy\n- Be specific to the topic (not generic)\n- Be achievable within the stated time frame\n- Be assessable (you can observe/measure if students achieved it)\n\n**STEP 4 - Design Aligned Assessments & Activities:**\n\nFor EACH learning objective, provide:\n\n**A. Formative Assessment** (low-stakes check for understanding)\n- What it is\n- When to use it (timing in lesson)\n- What you're looking for (success criteria)\n\n**B. Summative Assessment** (graded assignment that measures the LO)\n- What it is\n- How it directly measures the learning objective\n- Approximate grading time/complexity\n\n**C. In-Class or Asynchronous Activity** (practice opportunity)\n- Description of the activity\n- Duration\n- Materials needed\n- How students will engage (individual, pair, group)\n\n**D. Alternative Accessible Format**\n- How to adapt this for students with disabilities or different learning preferences\n- Example: Visual learners, students with mobility limitations, English language learners\n\n---\n\n### CRITICAL FORMAT REQUIREMENT\n\nYou MUST present output using this structure:\n\n```markdown\n## Topic: [Your Topic]\n\n### Learning Objective 1 (Bloom's Level: REMEMBER)\n**LO:** \"Define and list the five main causes of [Topic] using discipline-specific terminology.\"\n\n**Formative Assessment:**\n- **What:** A 1-minute paper at the end of class asking students to list the causes from memory\n- **When:** Last 5 minutes of class session 1\n- **Success criteria:** Student lists at least 4 of 5 causes using correct terms\n\n**Summative Assessment:**\n- **What:** Multiple-choice and short-answer quiz questions\n- **How it measures LO:** Questions directly test recall and definition of the causes\n- **Grading time:** 5-10 minutes per exam using answer key\n\n**In-Class Activity:**\n- **What:** Think-Pair-Share: Students first individually brainstorm causes, then discuss with partner, then share with class\n- **Duration:** 10 minutes\n- **Materials:** Worksheet with guided prompts\n- **Engagement:** Individual (2 min) → Pairs (5 min) → Whole class (3 min)\n\n**Accessible Alternative:**\n- Students who struggle with timed writing can verbally record their 1-minute paper using phone/computer\n- Provide word bank for students with language processing differences\n- Allow students to draw/diagram the causes instead of listing\n\n---\n\n### Learning Objective 2 (Bloom's Level: APPLY)\n[Continue same structure...]\n```\n\n---\n\n### STYLE & TONE\n\n- Clear, actionable, and specific\n- Vary the assessment types (not all quizzes, not all essays)\n- Include active learning strategies\n- Make activities feasible within stated time constraints\n- Consider [My Teaching Context] and [My Preferred Assessment Style]\n\n---\n\n### CRUCIAL RULES\n\n**PRIMARY DIRECTIVE - Cognitive Level Alignment:**\n- The formative assessment, summative assessment, AND activity must all align to the SAME Bloom's level as the objective\n- Example: If LO is \"Analyze,\" don't give me an activity that only asks students to \"list\" or \"define\"\n\n**Accessibility Requirements:**\n- EVERY objective must include an alternative format\n- Consider multiple means of representation, expression, and engagement (UDL principles)\n- Accommodations should be educationally equivalent, not easier\n\n**Variety Requirements:**\n- Don't use the same assessment type for every objective\n- Include mix of written, verbal, visual, and kinesthetic options\n- If [My Teaching Context] is online, all activities must be feasible remotely\n\n---\n\n### EMU-SPECIFIC CONTEXT\n\n**EMU Course Contexts:**\n\n**Large Lectures (100+ students):**\n- Formative assessments should use classroom response systems (Poll Everywhere, iClicker, Canvas polls)\n- Summative assessments may need auto-graded components\n- Activities can use think-pair-share, neighbor discussion, or quick writes\n\n**Small Seminars (15-25 students):**\n- Can include more discussion-based formatives\n- Can use peer review and collaborative assessments\n- Activities can be more complex and discussion-intensive\n\n**Online/Hybrid:**\n- Use Canvas discussion boards, quizzes, and VoiceThread\n- Activities must be clearly structured with detailed instructions\n- Formatives can include pre-class \"check-ins\" via Canvas\n\n**EMU Student Population Considerations:**\n- Many students work 20+ hours per week—keep out-of-class time realistic\n- Many students are first-generation college—be explicit about expectations\n- Significant commuter population—minimize required outside-of-class group meetings\n- Provide multiple formats to support diverse learning needs\n\n---\n\n### AFTER GENERATING OBJECTIVES\n\nAsk me:\n\n\"I've created [number] learning objectives with aligned assessments.\n\n**How does this look?** Would you like me to:\n\n1. **Adjust the cognitive level distribution?** (More foundational? More challenging?)\n2. **Change specific assessments?** (Different formats? More/less time-intensive?)\n3. **Modify activities?** (More collaborative? More individual? More technology-enhanced?)\n4. **Add Canvas-specific instructions?** (How to set these up in your LMS?)\n5. **Create a lesson plan?** (Put these objectives into a full class session structure?)\n6. **Generate a rubric?** (For any of the summative assessments?)\n\nLet me know what would be most helpful!\"\n\n---\n\n### ADVANCED OPTIONS\n\n**If you want to use this Gem with a file:**\n\nUpload a textbook chapter PDF and say:\n\"Generate learning objectives based on Chapter 4 of this textbook. Focus on [specific topic within chapter].\"\n\n**If you want objectives for multiple connected lessons:**\n\n\"I'm planning a 3-week unit on [topic]. Generate:\n- Week 1: Foundational objectives (Remember/Understand)\n- Week 2: Application objectives (Apply/Analyze)\n- Week 3: Higher-order objectives (Evaluate/Create)\nEnsure they build on each other sequentially.\"\n\n\n---\n\n\n",
+                "Tags (Keywords)": "Faculty",
+                "Last Updated": "2025-11-02",
+                "LLM": "Gemini",
+                "Notes": "### TROUBLESHOOTING GUIDE\n\n**Problem:** \"All my objectives are at Remember/Understand level.\"\n\n**Solution:** In your prompt, be explicit:\n\"Give me 5 objectives for 'The Cell Cycle.' I need at least TWO at the Analyze level and ONE at the Evaluate or Create level. This is a 300-level course and students have prerequisite knowledge.\"\n\n---\n\n**Problem:** \"The assessments are all essays or exams.\"\n\n**Solution:** Edit the Gem Setup and change [My Preferred Assessment Style] to include more variety. Or in-chat, specify:\n\"Regenerate the assessments. I want to include: one concept map, one short video explanation, one problem set, and one peer teaching exercise. No traditional essays.\"\n\n---\n\n**Problem:** \"The in-class activities are not realistic for my 50-minute class.\"\n\n**Solution:** In your initial prompt, be very specific about time:\n\"Generate objectives for one 50-minute class session. All activities must fit within that time, leaving 10 minutes for transitions and admin.\""
+            },
+            {
+                "Prompt Title": "The Universal Perfection Loop Prompt",
+                "File": "",
+                "Category": "Ideas",
+                "Purpose": "Add this to the end of any complex, \"zero-to-one\" prompt to make GPT-5 create its own rubric for excellence, grade its work, and iterate internally until it produces a top-tier result.",
+                "The Prompt": "Before you respond, create an internal rubric for what defines a 'world-class' answer to my request. Then internally iterate on your work until it scores 10/10 against that rubric, and show me only the final, perfect output.",
+                "Tags (Keywords)": "Improvement",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": ""
+            },
+            {
+                "Prompt Title": "Solution Generation Focus: Low-Overhead, High-Value ",
+                "File": "",
+                "Category": "",
+                "Purpose": "Input Idea and brainstorm high value solutions",
+                "The Prompt": "You are my assistant for brainstorming and solution design. \n\n When I ask for ideas, please:\n- **ONLY suggest solutions that are low-overhead and clearly add value beyond what I'm already doing.**\n- **Avoid proposing tools, systems, or workflows that would introduce complexity unless they offer significant benefit.**\n- **Always weigh pros/cons before recommending any idea or tool.**\n- **Prefer solutions that work inside my current workflow or require minimal setup.**\n- **Play devil's advocate: briefly note why a suggestion might not be worth pursuing.**\n- **Summarize ideas cleanly so I can evaluate them easily.**\n\n### Example language you can use:\n- *\"Here's a practical idea that builds on your current system…\"*\n- *\"Here's a solution, but it may not add enough value because…\"*\n- *\"This might work, but be aware of this potential downside…\"*\n\nYour goal is to help me stay focused on what's truly practical and worthwhile for my needs.",
+                "Tags (Keywords)": "",
+                "Last Updated": "2025-11-02",
+                "LLM": "ChatGPT",
+                "Notes": "This file contains a reusable AI idea request template to help guide ChatGPT in providing low-overhead, high-value suggestions that align with Samantha's workflow. It emphasizes practicality, pros/cons analysis, and avoiding unnecessary complexity."
+            },
+            {
+                "Prompt Title": "Bio Prompt",
+                "File": "",
+                "Category": "",
+                "Purpose": "Use for About me or Bio sections/projects",
+                "The Prompt": "Write a bold, authentic personal introduction for a [role] that instantly connects with their dream client and showcases what makes them unforgettable.\n\nHere's what to include:\n\nWho they serve and what transformation they help create\n\nTheir mission or \"why\" - what drives them at a soul level\n\nTheir unique voice, energy, or vibe (fun, fiery, spiritual, strategic, etc.)\n\nA glimpse of their origin story or defining moment\n\nWhat makes them different from others in their space\n\nThe tone should be:\n\nConfident (we're not playing small)\n\nMagnetic (speak directly to the reader's heart + mind)\n\nClear (ditch the fluff - say what matters)\n\nOutput a 3-5 sentence version for bios/pages, and a longer 1-2 paragraph version for email intros or \"About\" sections.\n\nOptional inputs:\n\n[Your name]\n\n[Business name or niche]\n\n[Audience description]\n\n[Big-picture vision or life philosophy]",
+                "Tags (Keywords)": "",
+                "Last Updated": "2025-11-02",
+                "LLM": "Claude",
+                "Notes": ""
+            }
+        ]
+    </script>
+
+    <script>
+        // Data
+        const promptsData = JSON.parse(document.getElementById('promptsData').textContent);
+
+        // Initialize the app
+        let filteredPrompts = [...promptsData];
+        
+        // Populate filter dropdowns
+        function populateFilters() {
+            // Get unique categories (filter out empty)
+            const categories = [...new Set(promptsData
+                .filter(p => p.Category)
+                .flatMap(p => p.Category.split(',').map(c => c.trim()))
+            )].sort();
+            const categorySelect = document.getElementById('categoryFilter');
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+            // Add option for uncategorized
+            if (promptsData.some(p => !p.Category)) {
+                const uncatOption = document.createElement('option');
+                uncatOption.value = '_uncategorized';
+                uncatOption.textContent = 'Uncategorized';
+                categorySelect.appendChild(uncatOption);
+            }
+
+            // Get unique LLMs
+            const llms = [...new Set(promptsData.map(p => p.LLM).filter(l => l))].sort();
+            const llmSelect = document.getElementById('llmFilter');
+            llms.forEach(llm => {
+                const option = document.createElement('option');
+                option.value = llm;
+                option.textContent = llm;
+                llmSelect.appendChild(option);
+            });
+
+            // Get unique tags (filter out empty)
+            const tags = [...new Set(promptsData
+                .filter(p => p["Tags (Keywords)"])
+                .flatMap(p => p["Tags (Keywords)"].split(',').map(t => t.trim()))
+            )].sort();
+            const tagSelect = document.getElementById('tagFilter');
+            tags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.textContent = tag;
+                tagSelect.appendChild(option);
+            });
+        }
+
+        // Render prompts
+        function renderPrompts() {
+            const container = document.getElementById('promptsContainer');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredPrompts.length === 0) {
+                container.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                container.style.display = 'grid';
+                noResults.style.display = 'none';
+                
+                container.innerHTML = filteredPrompts.map(prompt => {
+                    const promptJson = JSON.stringify(prompt).replace(/'/g, "&apos;");
+                    
+                    // Handle categories
+                    let categoryBadges = '';
+                    if (prompt.Category) {
+                        categoryBadges = prompt.Category.split(',').map(cat => 
+                            `<span class="badge badge-category">${cat.trim()}</span>`
+                        ).join('');
+                    } else {
+                        categoryBadges = '<span class="badge badge-uncategorized">Uncategorized</span>';
+                    }
+                    
+                    // Handle tags
+                    let tagBadges = '';
+                    if (prompt["Tags (Keywords)"]) {
+                        tagBadges = prompt["Tags (Keywords)"].split(',').map(tag => 
+                            `<span class="badge badge-tag">${tag.trim()}</span>`
+                        ).join('');
+                    }
+                    
+                    return `
+                    <div class="prompt-card" data-prompt='${promptJson}'>
+                        <div class="prompt-header">
+                            <div>
+                                <h2 class="prompt-title">${prompt["Prompt Title"]}</h2>
+                                <div class="updated-date">Last updated: ${prompt["Last Updated"]}</div>
+                            </div>
+                        </div>
+                        <div class="prompt-meta">
+                            <span class="badge badge-llm">${prompt.LLM}</span>
+                            ${categoryBadges}
+                            ${tagBadges}
+                        </div>
+                        <p class="prompt-purpose">${prompt.Purpose}</p>
+                        <div class="prompt-content">${prompt["The Prompt"]}</div>
+                        ${prompt.Notes ? `<div class="prompt-notes">💡 ${prompt.Notes}</div>` : ''}
+                        <div class="prompt-actions">
+                            <button class="btn btn-primary" onclick="copyPrompt(this)">Copy Prompt</button>
+                            <button class="btn btn-secondary" onclick="toggleCard(this)">Collapse</button>
+                        </div>
+                        <div class="expand-indicator">
+                            <span>▼</span> Click to view full prompt
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            }
+            
+            updateStats();
+        }
+
+        // Filter prompts
+        function filterPrompts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const llmFilter = document.getElementById('llmFilter').value;
+            const tagFilter = document.getElementById('tagFilter').value;
+            
+            filteredPrompts = promptsData.filter(prompt => {
+                // Search filter
+                const searchMatch = !searchTerm || 
+                    prompt["Prompt Title"].toLowerCase().includes(searchTerm) ||
+                    prompt.Purpose.toLowerCase().includes(searchTerm) ||
+                    prompt["The Prompt"].toLowerCase().includes(searchTerm) ||
+                    (prompt.Notes && prompt.Notes.toLowerCase().includes(searchTerm));
+                
+                // Category filter
+                let categoryMatch = true;
+                if (categoryFilter) {
+                    if (categoryFilter === '_uncategorized') {
+                        categoryMatch = !prompt.Category;
+                    } else {
+                        categoryMatch = prompt.Category && prompt.Category.includes(categoryFilter);
+                    }
+                }
+                
+                // LLM filter
+                const llmMatch = !llmFilter || prompt.LLM === llmFilter;
+                
+                // Tag filter
+                const tagMatch = !tagFilter || 
+                    (prompt["Tags (Keywords)"] && prompt["Tags (Keywords)"].includes(tagFilter));
+                
+                return searchMatch && categoryMatch && llmMatch && tagMatch;
+            });
+            
+            renderPrompts();
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalPrompts').textContent = promptsData.length;
+            document.getElementById('visiblePrompts').textContent = filteredPrompts.length;
+        }
+
+        // Copy prompt to clipboard
+        function copyPrompt(button) {
+            const card = button.closest('.prompt-card');
+            const promptData = JSON.parse(card.dataset.prompt);
+            const textToCopy = promptData["The Prompt"];
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast('Prompt copied to clipboard!');
+            }).catch(err => {
+                showToast('Failed to copy prompt');
+            });
+        }
+
+        // Toggle card expansion
+        function toggleCard(button) {
+            const card = button.closest('.prompt-card');
+            card.classList.remove('expanded');
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterPrompts);
+        document.getElementById('categoryFilter').addEventListener('change', filterPrompts);
+        document.getElementById('llmFilter').addEventListener('change', filterPrompts);
+        document.getElementById('tagFilter').addEventListener('change', filterPrompts);
+
+        // Card click handler
+        document.addEventListener('click', function(e) {
+            const card = e.target.closest('.prompt-card');
+            if (card && !e.target.closest('.btn')) {
+                card.classList.toggle('expanded');
+            }
+        });
+
+        // Initialize
+        populateFilters();
+        renderPrompts();
+    </script>
+</body>
+</html>
