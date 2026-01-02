@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Prompts Organizer</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * {
             margin: 0;
             padding: 0;
@@ -13,24 +14,28 @@
         }
 
         :root {
-            --primary-color: #2563eb;
+            --primary-color: #1d4ed8;
             --secondary-color: #64748b;
-            --accent-color: #10b981;
-            --background: #f8fafc;
+            --accent-color: #14b8a6;
+            --background: #f7f8fb;
             --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
+            --surface-2: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
             --border-color: #e2e8f0;
             --hover-bg: #f1f5f9;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
+            --shadow-md: 0 6px 16px rgb(15 23 42 / 0.08);
+            --shadow-lg: 0 16px 30px rgb(15 23 42 / 0.12);
+            --ring: 0 0 0 3px rgba(29, 78, 216, 0.16);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            background: var(--background);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #fdfdfd 0%, var(--background) 60%);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.65;
+            font-size: 15.5px;
         }
 
         .container {
@@ -40,32 +45,35 @@
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 0;
+            background: #f1f3f5;
+            color: var(--text-primary);
+            padding: 32px 0 28px;
             margin-bottom: 30px;
-            box-shadow: var(--shadow-lg);
+            border-bottom: 1px solid var(--border-color);
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             text-align: center;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
         .subtitle {
             text-align: center;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-secondary);
             font-size: 1.1rem;
         }
 
         .controls {
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
+            padding: 22px;
+            border-radius: 14px;
             margin-bottom: 30px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
 
         .search-container {
@@ -75,25 +83,27 @@
 
         .search-input {
             width: 100%;
-            padding: 12px 40px 12px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 12px 40px 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
         }
 
         .search-input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: var(--ring);
         }
 
         .search-icon {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-secondary);
+            color: #94a3b8;
+            font-size: 14px;
         }
 
         .filters {
@@ -108,20 +118,20 @@
         }
 
         .filter-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             color: var(--text-secondary);
         }
 
         .filter-select {
-            padding: 8px 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
+            padding: 9px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             background: white;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .filter-select:hover {
@@ -131,7 +141,7 @@
         .filter-select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: var(--ring);
         }
 
         .stats {
@@ -144,9 +154,10 @@
 
         .stat {
             text-align: center;
-            padding: 10px 20px;
-            background: var(--hover-bg);
-            border-radius: 8px;
+            padding: 10px 18px;
+            background: var(--surface-2);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
         }
 
         .stat-number {
@@ -167,17 +178,17 @@
 
         .prompt-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 20px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 1px solid var(--border-color);
         }
 
         .prompt-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
             border-color: var(--primary-color);
         }
 
@@ -195,6 +206,7 @@
             cursor: pointer;
             color: var(--text-secondary);
             padding: 4px;
+            line-height: 1;
         }
 
         .favorite-button:hover {
@@ -210,7 +222,7 @@
             color: white;
         }
         .prompt-title {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 5px;
@@ -225,25 +237,25 @@
 
         .badge {
             padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            border-radius: 999px;
+            font-size: 11.5px;
             font-weight: 600;
             white-space: nowrap;
         }
 
         .badge-llm {
-            background: #e0e7ff;
-            color: #3730a3;
+            background: #e8edff;
+            color: #2c3e91;
         }
 
         .badge-category {
-            background: #d1fae5;
-            color: #065f46;
+            background: #e6f7f5;
+            color: #0f766e;
         }
 
         .badge-tag {
-            background: #fef3c7;
-            color: #92400e;
+            background: #fef9e7;
+            color: #8a5a0a;
         }
 
         .badge-uncategorized {
@@ -254,20 +266,22 @@
         .prompt-purpose {
             color: var(--text-secondary);
             margin-bottom: 15px;
+            font-size: 14.5px;
         }
 
         .prompt-content {
             background: var(--hover-bg);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 10px;
             margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+            font-size: 13.5px;
             white-space: pre-wrap;
             word-wrap: break-word;
             display: none;
             max-height: 400px;
             overflow-y: auto;
+            border: 1px solid var(--border-color);
         }
 
         .prompt-card.expanded .prompt-content {
@@ -276,12 +290,12 @@
 
         .prompt-notes {
             padding: 12px;
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            border-radius: 4px;
+            background: #fff7e6;
+            border-left: 3px solid #f0b429;
+            border-radius: 8px;
             margin-top: 15px;
             font-size: 14px;
-            color: #78350f;
+            color: #7a4f0a;
             display: none;
             white-space: pre-wrap;
         }
@@ -302,13 +316,13 @@
         }
 
         .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 8px 14px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-size: 13.5px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
         }
 
         .btn-primary {
@@ -317,16 +331,43 @@
         }
 
         .btn-primary:hover {
-            background: #1d4ed8;
+            background: #1b46c2;
         }
 
         .btn-secondary {
-            background: var(--hover-bg);
+            background: #f8fafc;
             color: var(--text-primary);
+            border-color: var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #e2e8f0;
+            background: #eef2f6;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn:focus-visible,
+        .search-input:focus-visible,
+        .filter-select:focus-visible,
+        .form-input:focus-visible,
+        .form-textarea:focus-visible {
+            outline: none;
+            box-shadow: var(--ring);
+        }
+
+        #openPromptModal {
+            background: #9ca3af;
+            color: #0f172a;
+            border: 1px solid #0f172a;
+            box-shadow: 0 6px 12px rgba(15, 23, 42, 0.15);
+            padding: 12px 20px;
+            font-size: 15px;
+        }
+
+        #openPromptModal:hover {
+            background: #8f96a3;
         }
 
         .controls-actions {
@@ -436,7 +477,7 @@
             color: white;
             padding: 12px 20px;
             border-radius: 8px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-md);
             display: none;
             animation: slideIn 0.3s ease;
         }
@@ -479,7 +520,8 @@
         .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(15, 23, 42, 0.55);
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(2px);
         }
 
         .modal-dialog {
@@ -490,9 +532,10 @@
             max-height: 90vh;
             overflow: auto;
             background: var(--card-bg);
-            border-radius: 14px;
+            border-radius: 16px;
             box-shadow: var(--shadow-lg);
-            padding: 20px 24px 24px;
+            padding: 22px 24px 24px;
+            border: 1px solid var(--border-color);
         }
 
         .modal-header {
@@ -511,12 +554,13 @@
         .modal-close {
             background: var(--hover-bg);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             width: 34px;
             height: 34px;
             cursor: pointer;
             font-size: 18px;
             color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
 
         .modal-close:hover {
@@ -538,41 +582,42 @@
 
         .form-input,
         .form-textarea {
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             padding: 10px 12px;
-            font-size: 15px;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .form-input:focus,
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: var(--ring);
         }
 
         .form-textarea {
             min-height: 120px;
             resize: vertical;
-            font-family: 'Courier New', monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
         }
 
         .chip-input {
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             padding: 6px;
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             min-height: 44px;
             align-items: center;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
         }
 
         .chip-input:focus-within {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: var(--ring);
         }
 
         .chip-input input {
@@ -589,11 +634,12 @@
             align-items: center;
             gap: 6px;
             padding: 4px 10px;
-            background: var(--hover-bg);
+            background: var(--surface-2);
             border-radius: 999px;
             font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         .chip-remove {
@@ -613,6 +659,43 @@
             justify-content: flex-end;
             gap: 10px;
             margin-top: 18px;
+        }
+
+        .collapsible {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: var(--surface-2);
+        }
+
+        .collapsible summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .iteration-item {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .iteration-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .iteration-actions {
+            display: flex;
+            justify-content: flex-end;
         }
 
         .helper-text {
@@ -658,7 +741,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>🤖 AI Prompts Organizer</h1>
+            <h1>AI Prompts Organizer</h1>
             <p class="subtitle">Your curated collection of powerful AI prompts</p>
         </div>
     </header>
@@ -750,6 +833,15 @@
                 <div class="form-group">
                     <label class="form-label" for="promptContent">The Prompt</label>
                     <textarea class="form-textarea" id="promptContent" name="promptContent" required></textarea>
+                </div>
+                <div class="form-group" id="previousIterationsGroup" style="display: none;">
+                    <details id="previousIterationsDetails" class="collapsible">
+                        <summary id="previousIterationsSummary">Previous iterations (0)</summary>
+                        <div id="previousIterationsList"></div>
+                        <div class="modal-actions" style="justify-content: flex-start; margin-top: 10px;">
+                            <button class="btn btn-secondary" id="addIterationButton" type="button">+ Add iteration</button>
+                        </div>
+                    </details>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="promptNotes">Notes</label>
@@ -1002,6 +1094,7 @@
         // Initialize the app
         let filteredPrompts = [...promptsData];
         let editingPromptId = null;
+        let editingOriginalPromptText = '';
         
         function loadBaseIdMap() {
             try {
@@ -1091,6 +1184,91 @@
 
         function persistFavorites() {
             localStorage.setItem('aiPromptsFavorites', JSON.stringify(favoriteIds));
+        }
+
+        function normalizePreviousIterations(raw) {
+            if (!raw) {
+                return [];
+            }
+            if (Array.isArray(raw)) {
+                return raw.map((item) => {
+                    if (typeof item === 'string') {
+                        return { timestamp: null, text: item };
+                    }
+                    if (item && typeof item === 'object') {
+                        return {
+                            timestamp: item.timestamp || null,
+                            text: item.text || ''
+                        };
+                    }
+                    return null;
+                }).filter(Boolean);
+            }
+            return [];
+        }
+
+        function setPreviousIterationsVisibility(isEditMode) {
+            const group = document.getElementById('previousIterationsGroup');
+            if (!group) {
+                return;
+            }
+            group.style.display = isEditMode ? 'flex' : 'none';
+        }
+
+        function updatePreviousIterationsSummary() {
+            const summary = document.getElementById('previousIterationsSummary');
+            const count = document.querySelectorAll('.iteration-item').length;
+            if (summary) {
+                summary.textContent = `Previous iterations (${count})`;
+            }
+        }
+
+        function addIterationRow({ timestamp, text }) {
+            const list = document.getElementById('previousIterationsList');
+            if (!list) {
+                return;
+            }
+            const item = document.createElement('div');
+            item.className = 'iteration-item';
+            if (timestamp) {
+                item.dataset.timestamp = timestamp;
+            }
+            const safeTimestamp = timestamp ? new Date(timestamp).toLocaleString() : 'No timestamp';
+            item.innerHTML = `
+                <div class="iteration-meta">
+                    <span>${safeTimestamp}</span>
+                    <button class="btn btn-secondary" type="button" data-iteration-remove>Remove</button>
+                </div>
+                <textarea class="form-textarea" data-iteration-text>${text || ''}</textarea>
+            `;
+            item.querySelector('[data-iteration-remove]').addEventListener('click', () => {
+                item.remove();
+                updatePreviousIterationsSummary();
+            });
+            list.appendChild(item);
+            updatePreviousIterationsSummary();
+        }
+
+        function renderPreviousIterations(iterations) {
+            const list = document.getElementById('previousIterationsList');
+            if (!list) {
+                return;
+            }
+            list.innerHTML = '';
+            iterations.forEach((entry) => addIterationRow(entry));
+            updatePreviousIterationsSummary();
+        }
+
+        function collectPreviousIterationsFromUI() {
+            const items = Array.from(document.querySelectorAll('.iteration-item'));
+            return items.map((item) => {
+                const text = item.querySelector('[data-iteration-text]')?.value.trim() || '';
+                const timestamp = item.dataset.timestamp || null;
+                return {
+                    timestamp,
+                    text
+                };
+            }).filter(entry => entry.text);
         }
 
         function loadUserPrompts() {
@@ -1209,7 +1387,6 @@
         function rebuildBasePrompts() {
             basePrompts = normalizeBasePrompts(basePromptsRaw, baseIdMap, deletedBaseIds, listTransforms, listRemovals);
         }
-
         // Populate filter dropdowns
         function populateFilters() {
             const categorySelect = document.getElementById('categoryFilter');
@@ -1331,6 +1508,11 @@
                     "LLM": llm,
                     "Notes": entry.Notes ? String(entry.Notes) : ''
                 };
+
+                const iterations = normalizePreviousIterations(entry["Previous Iterations"]);
+                if (iterations.length) {
+                    normalized["Previous Iterations"] = iterations;
+                }
 
                 if (!seen.has(id)) {
                     seen.set(id, normalized);
@@ -1790,6 +1972,16 @@
         function clearForm() {
             document.getElementById('promptForm').reset();
             document.querySelectorAll('.chip').forEach(chip => chip.remove());
+            const list = document.getElementById('previousIterationsList');
+            const details = document.getElementById('previousIterationsDetails');
+            if (list) {
+                list.innerHTML = '';
+            }
+            if (details) {
+                details.open = false;
+            }
+            setPreviousIterationsVisibility(false);
+            updatePreviousIterationsSummary();
         }
 
         function openModal(mode = 'add') {
@@ -1800,6 +1992,7 @@
             populateDatalists();
             if (mode === 'add') {
                 editingPromptId = null;
+                editingOriginalPromptText = '';
                 clearForm();
                 document.getElementById('modalTitle').textContent = 'Add Prompt';
             }
@@ -1813,6 +2006,7 @@
             document.body.classList.remove('modal-open');
             clearForm();
             editingPromptId = null;
+            editingOriginalPromptText = '';
             document.getElementById('modalTitle').textContent = 'Add Prompt';
         }
 
@@ -1831,6 +2025,9 @@
             document.getElementById('promptNotes').value = prompt.Notes || '';
             setChips(document.getElementById('categoryChipInput'), prompt.Category ? prompt.Category.split(',').map(c => c.trim()).filter(Boolean) : []);
             setChips(document.getElementById('tagChipInput'), prompt["Tags (Keywords)"] ? prompt["Tags (Keywords)"].split(',').map(t => t.trim()).filter(Boolean) : []);
+            editingOriginalPromptText = prompt["The Prompt"] || '';
+            setPreviousIterationsVisibility(true);
+            renderPreviousIterations(normalizePreviousIterations(prompt["Previous Iterations"]));
             openModal('edit');
         }
 
@@ -2030,6 +2227,24 @@
             };
 
             if (editingPromptId) {
+                const iterationsFromUI = collectPreviousIterationsFromUI();
+                const currentText = document.getElementById('promptContent').value.trim();
+                const autoCapture = editingOriginalPromptText && currentText !== editingOriginalPromptText
+                    ? { timestamp: new Date().toISOString(), text: editingOriginalPromptText }
+                    : null;
+                let mergedIterations = [...iterationsFromUI];
+                if (autoCapture) {
+                    const latestText = mergedIterations[mergedIterations.length - 1]?.text || '';
+                    if (latestText !== autoCapture.text) {
+                        mergedIterations.push(autoCapture);
+                    }
+                }
+                if (mergedIterations.length) {
+                    newPrompt["Previous Iterations"] = mergedIterations;
+                }
+            }
+
+            if (editingPromptId) {
                 const userIndex = userPrompts.findIndex(p => p.id === editingPromptId);
                 if (userIndex !== -1) {
                     userPrompts[userIndex] = { ...newPrompt, _isBase: false };
@@ -2152,6 +2367,10 @@
 
             filterPrompts();
             closeAddItemModal(false);
+        });
+
+        document.getElementById('addIterationButton').addEventListener('click', () => {
+            addIterationRow({ timestamp: new Date().toISOString(), text: '' });
         });
 
         // Initialize
